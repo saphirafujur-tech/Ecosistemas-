@@ -3,35 +3,211 @@
 <head>
 <meta charset="UTF-8">
 <title>Misión Ecosistema</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(#1b5e20,#66bb6a);
+color:white;
+text-align:center;
+margin:0;
+}
+
+.container{
+background:white;
+color:black;
+padding:20px;
+border-radius:20px;
+max-width:600px;
+margin:40px auto;
+box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+
+button{
+margin:10px;
+padding:10px 15px;
+border-radius:10px;
+background:#2e7d32;
+color:white;
+border:none;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1b5e20;
+transform:scale(1.05);
+}
+
+.pantalla{ display:none; }
+.activa{ display:block; }
+
+#barraCont{
+background:#ccc;
+border-radius:10px;
+margin:15px;
+}
+
+#barra{
+background:#2e7d32;
+width:0%;
+padding:5px;
+border-radius:10px;
+color:white;
+transition:0.5s;
+}
+
+.lock{
+opacity:0.4;
+pointer-events:none;
+}
+</style>
+
 </head>
+
 <body>
 
 <div class="container">
+
 <h1>🌍 MISIÓN: SALVAR EL ECOSISTEMA</h1>
 
-<div class="progress">
+<div id="barraCont">
 <div id="barra">0%</div>
 </div>
 
 <h3>⭐ Puntos: <span id="puntos">0</span></h3>
 
+<!-- INICIO -->
+<div id="inicio" class="pantalla activa">
+<p>El ecosistema está colapsando…</p>
+<button onclick="ir('m1')">🚨 COMENZAR</button>
+</div>
+
+<!-- MISIÓN 1 -->
+<div id="m1" class="pantalla">
 <h2>🚨 MISIÓN 1</h2>
-<p>El ecosistema está fallando...</p>
+<p>Selecciona elementos del ecosistema:</p>
 
-<h3>🔍 Reto</h3>
-<button onclick="sumar()">Seres vivos</button>
-<button onclick="sumar()">Agua</button>
-<button onclick="sumar()">Sol</button>
+<button onclick="sumar(1)">Seres vivos</button>
+<button onclick="sumar(1)">Agua</button>
+<button onclick="sumar(1)">Sol</button>
 
-<h3>❓ ¿Qué es un ecosistema?</h3>
-<input id="respuesta">
-<button onclick="validar()">Validar</button>
+<br>
 
-<p id="mensaje"></p>
+<input id="r1" placeholder="Define ecosistema">
+<button onclick="validar1()">Validar</button>
+
+<p id="msg1"></p>
+
+<button id="btn2" class="lock" onclick="ir('m2')">🔓 Misión 2</button>
+</div>
+
+<!-- MISIÓN 2 -->
+<div id="m2" class="pantalla">
+<h2>🌡️ MISIÓN 2</h2>
+
+<p>¿Dónde vive mejor un ser vivo?</p>
+
+<button onclick="correcto2()">Zona óptima</button>
+<button onclick="incorrecto2()">Zona estrés</button>
+
+<p id="msg2"></p>
+
+<button id="btn3" class="lock" onclick="ir('m3')">🔓 Misión 3</button>
+</div>
+
+<!-- MISIÓN 3 -->
+<div id="m3" class="pantalla">
+<h2>🐾 MISIÓN 3</h2>
+
+<p>León → Cebra</p>
+
+<button onclick="correcto3()">Depredación</button>
+<button onclick="incorrecto3()">Mutualismo</button>
+
+<p id="msg3"></p>
+
+<h2>🏆 MISIÓN COMPLETADA</h2>
+</div>
 
 </div>
 
-<script src="script.js"></script>
+<script>
+let puntos = 0;
+let progreso = 0;
+
+function ir(p){
+document.querySelectorAll(".pantalla").forEach(x=>x.classList.remove("activa"));
+document.getElementById(p).classList.add("activa");
+}
+
+function sumar(valor){
+puntos += valor;
+progreso += 5;
+actualizar();
+sonido("click");
+}
+
+function validar1(){
+let r = document.getElementById("r1").value.toLowerCase();
+
+if(r.includes("seres vivos") || r.includes("medio") || r.includes("relaciones")){
+document.getElementById("msg1").innerText = "✅ Correcto +10 puntos";
+puntos += 10;
+progreso += 20;
+
+document.getElementById("btn2").classList.remove("lock");
+} else {
+document.getElementById("msg1").innerText = "❌ Intenta otra vez";
+}
+
+actualizar();
+}
+
+function correcto2(){
+document.getElementById("msg2").innerText="✅ Bien +10";
+puntos += 10;
+progreso += 20;
+
+document.getElementById("btn3").classList.remove("lock");
+
+actualizar();
+sonido("ok");
+}
+
+function incorrecto2(){
+document.getElementById("msg2").innerText="❌ No";
+sonido("error");
+}
+
+function correcto3(){
+document.getElementById("msg3").innerText="🏆 PERFECTO +20";
+puntos += 20;
+progreso += 20;
+actualizar();
+sonido("win");
+}
+
+function incorrecto3(){
+document.getElementById("msg3").innerText="❌ Incorrecto";
+sonido("error");
+}
+
+function actualizar(){
+document.getElementById("puntos").innerText = puntos;
+document.getElementById("barra").style.width = progreso + "%";
+document.getElementById("barra").innerText = progreso + "%";
+}
+
+function sonido(tipo){
+let audio = new Audio();
+if(tipo=="ok") audio.src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg";
+if(tipo=="error") audio.src="https://actions.google.com/sounds/v1/cartoon/boing.ogg";
+if(tipo=="win") audio.src="https://actions.google.com/sounds/v1/cartoon/concussive_hit_guitar_boing.ogg";
+if(tipo=="click") audio.src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg";
+audio.play();
+}
+</script>
+
 </body>
 </html>
