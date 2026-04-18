@@ -8,8 +8,9 @@
 body{
 font-family:Arial;
 background:linear-gradient(#1b5e20,#66bb6a);
-text-align:center;
 color:white;
+text-align:center;
+margin:0;
 }
 
 .container{
@@ -17,13 +18,14 @@ background:white;
 color:black;
 padding:20px;
 border-radius:20px;
-max-width:700px;
-margin:20px auto;
+max-width:650px;
+margin:30px auto;
+box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
 button{
 margin:8px;
-padding:10px;
+padding:10px 15px;
 border-radius:10px;
 background:#2e7d32;
 color:white;
@@ -31,17 +33,31 @@ border:none;
 cursor:pointer;
 }
 
-.lock{ opacity:0.4; pointer-events:none; }
-
-#ranking{
-margin-top:20px;
-background:#f1f8e9;
-padding:10px;
-border-radius:10px;
+button:hover{
+background:#1b5e20;
 }
 
 .pantalla{display:none;}
 .activa{display:block;}
+
+#barraCont{
+background:#ccc;
+border-radius:10px;
+margin:15px;
+}
+
+#barra{
+background:#2e7d32;
+width:0%;
+color:white;
+border-radius:10px;
+transition:0.5s;
+}
+
+.lock{
+opacity:0.4;
+pointer-events:none;
+}
 </style>
 </head>
 
@@ -51,128 +67,131 @@ border-radius:10px;
 
 <h1>🌍 MISIÓN: SALVAR EL ECOSISTEMA</h1>
 
-<h3>👥 Selecciona tu equipo</h3>
+<div id="barraCont">
+<div id="barra">0%</div>
+</div>
 
-<button onclick="setEquipo('Lince')">🐾 Lince</button>
-<button onclick="setEquipo('Águila')">🦅 Águila</button>
-<button onclick="setEquipo('Lobo')">🐺 Lobo</button>
+<h3>⭐ Puntos: <span id="puntos">0</span></h3>
 
-<p>Equipo actual: <b id="equipoActual">-</b></p>
-
-<h3>⭐ Puntos equipo: <span id="puntosEquipo">0</span></h3>
-
-<hr>
-
-<!-- PANTALLAS -->
+<!-- INICIO -->
 <div id="inicio" class="pantalla activa">
-<button onclick="ir('m1')">🚨 COMENZAR</button>
+<p>El ecosistema está en peligro…</p>
+<button onclick="ir('m1')">🚨 COMENZAR MISIÓN</button>
 </div>
 
+<!-- MISIÓN 1 -->
 <div id="m1" class="pantalla">
-<h2>MISIÓN 1</h2>
+<h2>🚨 MISIÓN 1: ECOSISTEMA</h2>
 
-<button onclick="sumar(5)">Seres vivos</button>
-<button onclick="sumar(5)">Agua</button>
-<button onclick="sumar(5)">Sol</button>
+<p><b>¿Qué es un ecosistema?</b></p>
 
-<input id="r1" placeholder="Define ecosistema">
-<button onclick="validar()">Validar</button>
+<button onclick="correcto(10,'msg1','btn2')">
+Conjunto de seres vivos, el medio y sus relaciones
+</button>
 
-<p id="msg"></p>
+<button onclick="incorrecto('msg1')">
+Solo los seres vivos
+</button>
 
-<button id="btn2" class="lock" onclick="ir('m2')">🔓 Misión 2</button>
+<button onclick="incorrecto('msg1')">
+Solo el medio físico
+</button>
+
+<p id="msg1"></p>
+
+<button id="btn2" class="lock" onclick="ir('m2')">🔓 Siguiente misión</button>
 </div>
 
+<!-- MISIÓN 2 -->
 <div id="m2" class="pantalla">
-<h2>MISIÓN 2</h2>
+<h2>🌡️ MISIÓN 2: FACTORES</h2>
 
-<button onclick="correcto()">Zona óptima</button>
-<button onclick="incorrecto()">Zona estrés</button>
+<p><b>¿Dónde vive mejor un ser vivo?</b></p>
+
+<button onclick="correcto(10,'msg2','btn3')">Zona óptima</button>
+<button onclick="incorrecto('msg2')">Zona de estrés</button>
+<button onclick="incorrecto('msg2')">Zona de intolerancia</button>
 
 <p id="msg2"></p>
 
-<button onclick="ir('m3')">🔓 Misión 3</button>
+<button id="btn3" class="lock" onclick="ir('m3')">🔓 Siguiente misión</button>
 </div>
 
+<!-- MISIÓN 3 -->
 <div id="m3" class="pantalla">
-<h2>MISIÓN FINAL</h2>
-<p>🏆 Ecosistema restaurado</p>
+<h2>🐾 MISIÓN 3: RELACIONES</h2>
+
+<p><b>León → Cebra</b></p>
+
+<button onclick="correcto(10,'msg3','btn4')">Depredación</button>
+<button onclick="incorrecto('msg3')">Mutualismo</button>
+<button onclick="incorrecto('msg3')">Parasitismo</button>
+
+<p id="msg3"></p>
+
+<button id="btn4" class="lock" onclick="ir('m4')">🔓 Siguiente misión</button>
 </div>
 
-<hr>
+<!-- MISIÓN 4 (RAZONAMIENTO) -->
+<div id="m4" class="pantalla">
+<h2>🧠 MISIÓN FINAL</h2>
 
-<!-- RANKING -->
-<div id="ranking">
-<h3>🏆 RANKING</h3>
-<ul id="listaRanking"></ul>
+<p><b>¿Qué pasaría si desaparecen las plantas?</b></p>
+
+<input id="respuesta" placeholder="Escribe tu respuesta">
+<br><br>
+
+<button onclick="validar()">Responder</button>
+
+<p id="msg4"></p>
+
 </div>
 
 </div>
 
 <script>
-let equipos = {
-"Lince":0,
-"Águila":0,
-"Lobo":0
-};
-
-let equipoActual = "";
-
-function setEquipo(nombre){
-equipoActual = nombre;
-document.getElementById("equipoActual").innerText = nombre;
-actualizarRanking();
-}
-
-function sumar(p){
-if(equipoActual=="") return alert("Elige equipo");
-
-equipos[equipoActual]+=p;
-actualizar();
-}
-
-function validar(){
-let r = document.getElementById("r1").value.toLowerCase();
-
-if(r.includes("seres vivos")){
-sumar(10);
-document.getElementById("msg").innerText="✅ Correcto";
-document.getElementById("btn2").classList.remove("lock");
-}else{
-document.getElementById("msg").innerText="❌ Intenta otra vez";
-}
-}
-
-function correcto(){
-sumar(10);
-document.getElementById("msg2").innerText="✅ Bien";
-}
-
-function incorrecto(){
-document.getElementById("msg2").innerText="❌ No";
-}
-
-function actualizar(){
-document.getElementById("puntosEquipo").innerText = equipos[equipoActual];
-actualizarRanking();
-}
-
-function actualizarRanking(){
-let lista = document.getElementById("listaRanking");
-lista.innerHTML="";
-
-let orden = Object.entries(equipos).sort((a,b)=>b[1]-a[1]);
-
-orden.forEach(e=>{
-let li = document.createElement("li");
-li.innerText = e[0]+" → "+e[1]+" pts";
-lista.appendChild(li);
-});
-}
+let puntos = 0;
+let progreso = 0;
 
 function ir(p){
 document.querySelectorAll(".pantalla").forEach(x=>x.classList.remove("activa"));
 document.getElementById(p).classList.add("activa");
+}
+
+function correcto(p, msgId, btnId){
+document.getElementById(msgId).innerText="✅ Correcto +"+p;
+puntos += p;
+progreso += 25;
+
+if(btnId){
+document.getElementById(btnId).classList.remove("lock");
+}
+
+actualizar();
+}
+
+function incorrecto(msgId){
+document.getElementById(msgId).innerText="❌ Incorrecto";
+}
+
+function validar(){
+let r = document.getElementById("respuesta").value.toLowerCase();
+
+if(r.includes("mueren") || r.includes("alimento") || r.includes("energía")){
+document.getElementById("msg4").innerText="🏆 ¡Excelente! Ecosistema restaurado";
+puntos += 20;
+progreso = 100;
+} else {
+document.getElementById("msg4").innerText="💡 Piensa en la cadena trófica";
+}
+
+actualizar();
+}
+
+function actualizar(){
+document.getElementById("puntos").innerText = puntos;
+document.getElementById("barra").style.width = progreso + "%";
+document.getElementById("barra").innerText = progreso + "%";
 }
 </script>
 
